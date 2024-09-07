@@ -24,6 +24,10 @@
 		EB0B202A2C8C92E00059D146 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB0B20272C8C92E00059D146 /* NetworkError.swift */; };
 		EB0B202B2C8C92E00059D146 /* CommonError.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB0B20282C8C92E00059D146 /* CommonError.swift */; };
 		EB0B202C2C8C92E00059D146 /* Notifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB0B20292C8C92E00059D146 /* Notifier.swift */; };
+		EB0B202E2C8C95720059D146 /* ImageSearchInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB0B202D2C8C95720059D146 /* ImageSearchInteractor.swift */; };
+		EB0B20302C8C958F0059D146 /* ImageSearchPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB0B202F2C8C958F0059D146 /* ImageSearchPresenter.swift */; };
+		EB0B20322C8C95B80059D146 /* SearchResultImageDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB0B20312C8C95B80059D146 /* SearchResultImageDTO.swift */; };
+		EB0B20342C8C99700059D146 /* ImageSearchRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB0B20332C8C99700059D146 /* ImageSearchRouter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +61,10 @@
 		EB0B20272C8C92E00059D146 /* NetworkError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		EB0B20282C8C92E00059D146 /* CommonError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommonError.swift; sourceTree = "<group>"; };
 		EB0B20292C8C92E00059D146 /* Notifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Notifier.swift; sourceTree = "<group>"; };
+		EB0B202D2C8C95720059D146 /* ImageSearchInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSearchInteractor.swift; sourceTree = "<group>"; };
+		EB0B202F2C8C958F0059D146 /* ImageSearchPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSearchPresenter.swift; sourceTree = "<group>"; };
+		EB0B20312C8C95B80059D146 /* SearchResultImageDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultImageDTO.swift; sourceTree = "<group>"; };
+		EB0B20332C8C99700059D146 /* ImageSearchRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSearchRouter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,8 +138,8 @@
 		EB0B20022C8C76A20059D146 /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
-				EB0B20042C8C76E20059D146 /* ImageDetailsScene */,
 				EB0B20052C8C77040059D146 /* ImageSearchScene */,
+				EB0B20042C8C76E20059D146 /* ImageDetailsScene */,
 			);
 			path = Scenes;
 			sourceTree = "<group>";
@@ -218,6 +226,7 @@
 		EB0B200C2C8C776A0059D146 /* Router */ = {
 			isa = PBXGroup;
 			children = (
+				EB0B20332C8C99700059D146 /* ImageSearchRouter.swift */,
 			);
 			path = Router;
 			sourceTree = "<group>";
@@ -225,6 +234,7 @@
 		EB0B200D2C8C776F0059D146 /* Entities */ = {
 			isa = PBXGroup;
 			children = (
+				EB0B20312C8C95B80059D146 /* SearchResultImageDTO.swift */,
 			);
 			path = Entities;
 			sourceTree = "<group>";
@@ -232,6 +242,7 @@
 		EB0B200E2C8C77770059D146 /* Presenter */ = {
 			isa = PBXGroup;
 			children = (
+				EB0B202F2C8C958F0059D146 /* ImageSearchPresenter.swift */,
 			);
 			path = Presenter;
 			sourceTree = "<group>";
@@ -239,6 +250,7 @@
 		EB0B200F2C8C77800059D146 /* Interactor */ = {
 			isa = PBXGroup;
 			children = (
+				EB0B202D2C8C95720059D146 /* ImageSearchInteractor.swift */,
 			);
 			path = Interactor;
 			sourceTree = "<group>";
@@ -379,13 +391,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EB0B20342C8C99700059D146 /* ImageSearchRouter.swift in Sources */,
 				EB0B20142C8C77C60059D146 /* ImageSearchAssembly.swift in Sources */,
 				EB0B201D2C8C7AD80059D146 /* DataService.swift in Sources */,
 				EB0B1FD22C8C71650059D146 /* AppDelegate.swift in Sources */,
 				EB0B201A2C8C79100059D146 /* ImageSearchView.swift in Sources */,
 				EB0B202B2C8C92E00059D146 /* CommonError.swift in Sources */,
+				EB0B202E2C8C95720059D146 /* ImageSearchInteractor.swift in Sources */,
+				EB0B20302C8C958F0059D146 /* ImageSearchPresenter.swift in Sources */,
 				EB0B20232C8C817B0059D146 /* NetworkService.swift in Sources */,
 				EB0B20242C8C817B0059D146 /* DownloadService.swift in Sources */,
+				EB0B20322C8C95B80059D146 /* SearchResultImageDTO.swift in Sources */,
 				EB0B20162C8C77F20059D146 /* ImageSearchViewController.swift in Sources */,
 				EB0B20222C8C817B0059D146 /* APIResponse.swift in Sources */,
 				EB0B1FD42C8C71650059D146 /* SceneDelegate.swift in Sources */,
@@ -478,6 +494,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSMainStoryboardFile = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -535,6 +552,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSMainStoryboardFile = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -550,6 +568,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = SKC6L8KZ5R;
@@ -557,7 +576,6 @@
 				INFOPLIST_FILE = UnsplashSearchClient/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -567,6 +585,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = AnnaVertikova.UnsplashSearchClient;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -578,6 +597,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = SKC6L8KZ5R;
@@ -585,7 +605,6 @@
 				INFOPLIST_FILE = UnsplashSearchClient/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -595,6 +614,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = AnnaVertikova.UnsplashSearchClient;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
