@@ -9,7 +9,7 @@ import UIKit
 
 protocol INetworkService {
     func getSearchResults(searchQuery: String, pageNumber: Int, completion: @escaping (Result<Data, NetworkError>) -> Void)
-    func getPreviewImage(with query: String, completion: @escaping (UIImage?, Error?) -> Void )
+    func getPreviewImage(with query: String, completion: @escaping (UIImage?, Error?) -> Void)
 }
 
 final class NetworkService {
@@ -18,16 +18,14 @@ final class NetworkService {
 }
 
 extension NetworkService: INetworkService {
-    
     func getSearchResults(searchQuery: String, pageNumber: Int, completion: @escaping (Result<Data, NetworkError>) -> Void) {
         guard let request = makeRequestURL(with: searchQuery, pageNumber: pageNumber) else { return }
-        
-        urlSession.dataTask(with: request) { data, response, error in
-            
+
+        urlSession.dataTask(with: request) { data, response, _ in
+
             guard let response = response as? HTTPURLResponse, let data = data else { return }
-            
+
             switch response.statusCode {
-                
             case 200...299:
                 if self.searchResultDataIsEmpty(data) {
                     completion(.failure(NetworkError(code: -1000, description: "Images not found")))
@@ -43,49 +41,45 @@ extension NetworkService: INetworkService {
             default:
                 completion(.failure(NetworkError(code: response.statusCode, description: "\(response.statusCode): Unknown error")))
             }
-            
+
         }.resume()
     }
-    
+
     func getPreviewImage(with query: String, completion: @escaping (UIImage?, Error?) -> Void) {
         guard let url = URL(string: query) else { return }
-        
+
         urlSession.dataTask(with: url) { data, response, error in
             if let data = data, error == nil {
                 guard let image = UIImage(data: data) else { fatalError(CommonError.failedToLoadData) }
                 completion(image, nil)
             } else if let response = response as? HTTPURLResponse {
-                completion (nil, (NetworkError(code: response.statusCode, description: "\(response.statusCode): Image error")))
+                completion(nil, NetworkError(code: response.statusCode, description: "\(response.statusCode): Image error"))
             }
-            
-            
+
         }.resume()
-        
     }
 }
 
 private extension NetworkService {
-    
     func makeRequestURL(with searchQuery: String, pageNumber: Int) -> URLRequest? {
         var baseComponent = URLComponents(string: "https://api.unsplash.com/search/photos")
-        
+
         let searchQueryItem = URLQueryItem(name: "query", value: searchQuery)
         let clientIdItem = URLQueryItem(name: "client_id", value: id)
         let pageNumber = URLQueryItem(name: "page", value: String(pageNumber))
         let imagesPerSearch = URLQueryItem(name: "per_page", value: "20")
-        
+
         baseComponent?.queryItems = [pageNumber, imagesPerSearch, searchQueryItem, clientIdItem]
-        
+
         guard let baseUrlComponent = baseComponent?.url else {
-            
             return nil
         }
+
         return URLRequest(url: baseUrlComponent)
     }
-    
+
     func searchResultDataIsEmpty(_ data: Data) -> Bool {
         let emptyResultDataCount = 40
         return data.count <= emptyResultDataCount
     }
 }
-

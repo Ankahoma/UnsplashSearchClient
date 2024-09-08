@@ -14,7 +14,7 @@ final class ImageSearchRouter {
         self.navigationController = navigationController
     }
 
-    func showImageDetails(_ image: UIImage) {
+    func showImageDetails(_: UIImage) {
 //        let parameters = ImageDetailsAssembly.Parameters(image: image)
 //        let dependencies = ImageDetailsAssembly.Dependencies(navigationController: navigationController, parameters: parameters)
 //        let viewController = ImageDetailsAssembly.createModule(with: dependencies)

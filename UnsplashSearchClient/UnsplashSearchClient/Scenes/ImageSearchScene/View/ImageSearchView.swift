@@ -8,6 +8,8 @@
 import UIKit
 
 final class ImageSearchView: UIView {
+    var tableViewHeightConstraint: NSLayoutConstraint!
+
     var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.placeholder = "Search image with keyword..."
@@ -28,6 +30,16 @@ final class ImageSearchView: UIView {
         return collectionView
     }()
 
+    // Add table view for search suggestions
+    lazy var suggestionsTableView: UITableView = {
+        let tableView = UITableView()
+        tableView.isHidden = true
+        tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "SuggestionCell")
+        return tableView
+    }()
+
     lazy var activityIndicator: UIActivityIndicatorView = .init(style: .large)
 
     init() {
@@ -39,9 +51,45 @@ final class ImageSearchView: UIView {
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-}
 
-extension ImageSearchView {
+    private func setConstraints() {
+        backgroundColor = .systemBackground
+        addSubview(searchBar)
+        addSubview(collectionView)
+        addSubview(suggestionsTableView)
+
+        NSLayoutConstraint.activate([
+            searchBar.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 20),
+            searchBar.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
+            searchBar.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
+            searchBar.heightAnchor.constraint(equalToConstant: 44),
+
+            suggestionsTableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
+            suggestionsTableView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            suggestionsTableView.trailingAnchor.constraint(equalTo: trailingAnchor),
+
+            collectionView.topAnchor.constraint(equalTo:
+                suggestionsTableView.isHidden ?
+                    searchBar.bottomAnchor : suggestionsTableView.bottomAnchor,
+                constant: 10),
+            collectionView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor)
+        ])
+
+        tableViewHeightConstraint = suggestionsTableView.heightAnchor.constraint(equalToConstant: 0)
+        tableViewHeightConstraint.isActive = true
+    }
+
+    func updateLayout(with numberOfRows: Int) {
+        let height = CGFloat(numberOfRows) * 44.0
+        tableViewHeightConstraint.constant = min(height, 220)
+
+        UIView.animate(withDuration: 0.3) {
+            self.layoutIfNeeded()
+        }
+    }
+
     func setSearchBarDelegate(_ delegate: UISearchBarDelegate) {
         searchBar.delegate = delegate
     }
@@ -52,6 +100,19 @@ extension ImageSearchView {
 
     func setCollectionViewDataSource(_ dataSource: UICollectionViewDataSource) {
         collectionView.dataSource = dataSource
+    }
+
+    func setSuggestionsDataSource(_ dataSource: UITableViewDataSource, delegate: UITableViewDelegate) {
+        suggestionsTableView.dataSource = dataSource
+        suggestionsTableView.delegate = delegate
+    }
+
+    func showSuggestions() {
+        suggestionsTableView.isHidden = false
+    }
+
+    func hideSuggestions() {
+        suggestionsTableView.isHidden = true
     }
 
     func updateItem(at index: Int) {
@@ -79,43 +140,19 @@ extension ImageSearchView {
     func hideActivityIndicator() {
         activityIndicator.stopAnimating()
     }
-}
 
-private extension ImageSearchView {
     func createCompositionalLayout() -> UICollectionViewLayout {
-        
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.5), heightDimension: .fractionalHeight(1))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         item.contentInsets = NSDirectionalEdgeInsets(top: 2, leading: 2, bottom: 2, trailing: 2)
 
-       
         let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(0.5))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
 
-        
         let section = NSCollectionLayoutSection(group: group)
-        
-        
+
         let layout = UICollectionViewCompositionalLayout(section: section)
 
         return layout
-    }
-
-    func setConstraints() {
-        backgroundColor = .systemBackground
-        addSubview(searchBar)
-        addSubview(collectionView)
-
-        NSLayoutConstraint.activate([
-            searchBar.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 20),
-            searchBar.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
-            searchBar.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
-            searchBar.heightAnchor.constraint(equalToConstant: 44),
-
-            collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 20),
-            collectionView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor)
-        ])
     }
 }

@@ -32,6 +32,9 @@ class ImageSearchViewController: UIViewController {
     private let searchResultDataSource: IImageSearchResultDataSource
     private let searchResultDelegate: IImageSearchResultDelegate
 
+    private var recentSearches: [String] = []
+    private var filteredSearches: [String] = []
+
     private var searchBar: UISearchBar = .init()
     private var pageLoaded: Int = 1
 
@@ -40,7 +43,7 @@ class ImageSearchViewController: UIViewController {
         view.setCollectionViewDataSource(self)
         view.setCollectionViewDelegate(self)
         view.setSearchBarDelegate(self)
-
+        view.setSuggestionsDataSource(self, delegate: self)
         return view
     }()
 
@@ -63,6 +66,7 @@ class ImageSearchViewController: UIViewController {
     override func viewWillAppear(_: Bool) {
         searchBar.text = ""
         presenter.viewWillAppear()
+        loadRecentSearches()
     }
 
     override func viewDidLoad() {
@@ -73,6 +77,24 @@ class ImageSearchViewController: UIViewController {
 
     override func loadView() {
         view = contentView
+    }
+}
+
+extension ImageSearchViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+        guard let searchText = searchBar.text, !searchText.isEmpty else {
+            return
+        }
+        pageLoaded = 1
+        presenter.performNewSearch(with: searchText, at: pageLoaded)
+        saveRecentSearch(searchText)
+        contentView.hideSuggestions()
+    }
+
+    func searchBar(_: UISearchBar, textDidChange searchText: String) {
+        filterSearchSuggestions(for: searchText)
+        contentView.updateLayout(with: filteredSearches.count)
     }
 }
 
@@ -112,6 +134,37 @@ extension ImageSearchViewController: IImageSearchView {
     }
 }
 
+extension ImageSearchViewController: INotifierDelegate {
+    func showAlert(message: String) {
+        if contentView.activityIndicator.isAnimating {
+            hideActivityIndicator()
+        }
+
+        let alert = UIAlertController(title: "Something is wrong :(", message: message, preferredStyle: UIAlertController.Style.alert)
+        alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+}
+
+extension ImageSearchViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
+        return filteredSearches.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "SuggestionCell", for: indexPath)
+        cell.textLabel?.text = filteredSearches[indexPath.row]
+        return cell
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let selectedSearch = filteredSearches[indexPath.row]
+        contentView.searchBar.text = selectedSearch
+        searchBarSearchButtonClicked(contentView.searchBar)
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+}
+
 extension ImageSearchViewController: UICollectionViewDataSource {
     func collectionView(_: UICollectionView, numberOfItemsInSection _: Int) -> Int {
         searchResultDataSource.getNumberOfRows()
@@ -130,7 +183,7 @@ extension ImageSearchViewController: UICollectionViewDataSource {
     }
 
     func collectionView(_: UICollectionView, willDisplay _: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if indexPath.row == searchResultDataSource.getNumberOfRows() - 1 {
+        if indexPath.row == searchResultDataSource.getNumberOfRows() - 2 {
             pageLoaded += 1
             presenter.updateSearchResult(at: pageLoaded)
         }
@@ -148,17 +201,6 @@ extension ImageSearchViewController: UICollectionViewDelegate {
 
     func collectionView(_: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         searchResultDelegate.imageDeselected(at: indexPath.item)
-    }
-}
-
-extension ImageSearchViewController: UISearchBarDelegate {
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder()
-        guard let searchText = searchBar.text, !searchText.isEmpty else {
-            return
-        }
-        pageLoaded = 1
-        presenter.performNewSearch(with: searchText, at: pageLoaded)
     }
 }
 
@@ -199,18 +241,6 @@ extension ImageSearchViewController: IImageSearchCellButtonsHandler {
     }
 }
 
-extension ImageSearchViewController: INotifierDelegate {
-    func showAlert(message: String) {
-        if contentView.activityIndicator.isAnimating {
-            hideActivityIndicator()
-        }
-
-        let alert = UIAlertController(title: "Something is wrong :(", message: message, preferredStyle: UIAlertController.Style.alert)
-        alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
-        present(alert, animated: true, completion: nil)
-    }
-}
-
 private extension ImageSearchViewController {
     func setupAppearance() {
         setupNavigationBar()
@@ -223,5 +253,33 @@ private extension ImageSearchViewController {
 
     func setupNotifications() {
         Notifier.imageSearchNotifier = self
+    }
+
+    func loadRecentSearches() {
+        let defaults = UserDefaults.standard
+        recentSearches = defaults.stringArray(forKey: "recentSearches") ?? []
+    }
+
+    func saveRecentSearch(_ query: String) {
+        if recentSearches.contains(query) {
+            return
+        }
+
+        if recentSearches.count == 5 {
+            recentSearches.removeFirst()
+        }
+
+        recentSearches.append(query)
+        UserDefaults.standard.set(recentSearches, forKey: "recentSearches")
+    }
+
+    func filterSearchSuggestions(for query: String) {
+        filteredSearches = recentSearches.filter { $0.lowercased().contains(query.lowercased()) }
+        if filteredSearches.isEmpty {
+            contentView.hideSuggestions()
+        } else {
+            contentView.showSuggestions()
+        }
+        contentView.suggestionsTableView.reloadData()
     }
 }
