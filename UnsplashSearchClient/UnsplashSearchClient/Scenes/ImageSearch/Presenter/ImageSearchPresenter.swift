@@ -1,0 +1,210 @@
+//
+//  ImageSearchPresenter.swift
+//  UnsplashSearchClient
+//
+//  Created by Анна Вертикова on 07.09.2024.
+//
+
+import Foundation
+
+protocol IImageSearchPresenter {
+    func viewWillAppear()
+    func didLoad(ui: IImageSearchView)
+    func performNewSearch(with searchQuery: String, at pageNumber: Int)
+    func updateSearchResult(at pageNumber: Int)
+    func configureCell(_ cell: SearchResultCell, at index: Int)
+    
+    func showImagePreview(at index: Int)
+    func showGallery()
+    
+    func startDownloadImage(at index: Int)
+    func pauseDownloadImage(at index: Int)
+    func resumeDownloadImage(at index: Int)
+    func cancelDownloadImage(at index: Int)
+    
+}
+
+protocol IImageSearchResultDataSource {
+    func getNumberOfRows() -> Int
+    func getCellForRow(at index: Int) -> SearchResultImage
+}
+
+protocol IImageSearchViewUpdateDelegate: AnyObject {
+    func updateItem(id: String)
+    func updateProgress(itemId: String, progress: Float, totalSize: String)
+    func updateDownloadedItem(with image: SearchResultImage)
+}
+
+protocol IImageSearchResultDelegate {
+    func imageSelected(at index: Int)
+    func imageDeselected(at index: Int)
+}
+
+final class ImageSearchPresenter: NSObject {
+    
+    weak var ui: IImageSearchView?
+    private var interactor: IImageSearchInteractor
+    private var router: ImageSearchRouter
+    private var searchQuery: String = ""
+    
+    private var searchResult: [SearchResultImage] = [] {
+        didSet {
+            ui?.update()
+        }
+    }
+    
+    init(interactor: IImageSearchInteractor, router: ImageSearchRouter) {
+        self.interactor = interactor
+        self.router = router
+    }
+}
+
+extension ImageSearchPresenter: IImageSearchPresenter {
+    func viewWillAppear() {
+        self.searchResult = []
+    }
+    
+    
+    func didLoad(ui: IImageSearchView) {
+        interactor.uiUpdater = self
+        self.ui = ui
+    }
+    
+    func performNewSearch(with searchQuery: String, at pageNumber: Int) {
+        self.searchResult = []
+        self.searchQuery = searchQuery
+        interactor.newSearchStarted()
+        performSearch(with: searchQuery, at: pageNumber)
+    }
+    
+    func updateSearchResult(at pageNumber: Int) {
+        performSearch(with: self.searchQuery, at: pageNumber)
+    }
+    
+    func configureCell(_ cell: SearchResultCell, at index: Int) {
+        ui?.hideActivityIndicator()
+        
+        let imageObject = searchResult[index]
+        let downloaded = imageObject.downloaded
+        let downloadItem = interactor.getDownloadItem(for: imageObject)
+        cell.configure(with: imageObject.image, downloaded: downloaded, downloadItem: downloadItem)
+    }
+    
+    func showImagePreview(at index: Int) {
+        
+        guard let sourceVC = self.ui as? ImageSearchViewController else {
+            fatalError(CommonError.failedToShowModalWindow)
+        }
+        router.showImageModally(with: ImageDetailsViewModel(with: searchResult[index]), at: sourceVC)
+    }
+    
+    func showGallery() {
+        router.showGallery()
+    }
+    
+    func startDownloadImage(at index: Int) {
+        let image = searchResult[index]
+        interactor.startDownload(image)
+    }
+    
+    func pauseDownloadImage(at index: Int) {
+        let image = searchResult[index]
+        interactor.pauseDownload(image)
+    }
+    
+    func resumeDownloadImage(at index: Int) {
+        
+        let image = searchResult[index]
+        interactor.resumeDownload(image)
+    }
+    
+    func cancelDownloadImage(at index: Int) {
+        let image = searchResult[index]
+        interactor.cancelDownload(image)
+    }
+}
+
+extension ImageSearchPresenter: IImageSearchResultDataSource {
+    
+    func getNumberOfRows() -> Int {
+        return searchResult.count
+    }
+    
+    func getCellForRow(at index: Int) -> SearchResultImage {
+        return searchResult[index]
+    }
+}
+
+extension ImageSearchPresenter: IImageSearchViewUpdateDelegate {
+    
+    func updateItem(id: String) {
+        if let index = searchResult.firstIndex(where: { $0.id == id }) {
+            self.searchResult[index].downloaded = true
+            ui?.updateItem(at: index)
+        }
+    }
+    
+    func updateProgress(itemId: String, progress: Float, totalSize: String) {
+        if let index = searchResult.firstIndex(where: { $0.id == itemId }) {
+            ui?.updateProgress(at: index, progress: progress, totalSize: totalSize)
+        }
+    }
+    
+    func updateDownloadedItem(with image: SearchResultImage) {
+        
+        if let index = searchResult.firstIndex(where: { $0.id == image.id }) {
+            searchResult[index] = image
+        }
+    }
+}
+
+private extension ImageSearchPresenter {
+    
+    func performSearch(with searchQuery: String, at pageNumber: Int) {
+        ui?.showActivityIndicator()
+        interactor.requestData(with: searchQuery, pageNumber: pageNumber) { [weak self] result, error in
+            
+            guard let searchResult = result, error == nil else {
+                if let error = error as? NetworkError {
+                    Notifier.imageSearchErrorOccured(message: "Error: \(error.description)")
+                } else {
+                    Notifier.imageSearchErrorOccured(message: "Error: \(String(describing: error?.localizedDescription))")
+                }
+                return
+            }
+            self?.searchResult = searchResult
+            
+        }
+    }
+}
+
+extension ImageSearchPresenter: IImageSearchResultDelegate {
+    
+    func imageSelected(at index: Int) {
+        
+        if searchResult[index].downloaded == false {
+            ui?.showDownloadMenu(at: index)
+        } else {
+            guard let sourceVC = self.ui as? ImageSearchViewController else {
+                fatalError(CommonError.failedToShowModalWindow)
+            }
+            interactor.getDownloadedImage(with: searchResult[index].id) { [weak self] image, error in
+                
+                guard error == nil else {
+                    Notifier.imageSearchErrorOccured(message: error?.localizedDescription ?? "Unknown error")
+                    return
+                }
+                
+                guard let image = image else {
+                    Notifier.imageSearchErrorOccured(message: "Image Error")
+                    return
+                }
+                self?.router.showImageModally(with: ImageDetailsViewModel(with: image), at: sourceVC)
+            }
+        }
+    }
+    
+    func imageDeselected(at index: Int) {
+        ui?.hideDownloadMenu(at: index)
+    }
+}

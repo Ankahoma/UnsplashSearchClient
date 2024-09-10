@@ -16,7 +16,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let navigationController = UINavigationController()
         let networkService = NetworkService()
         let downloadService = DownloadService()
-        let dataService = DataService()
+        let dataService = CoreDataService()
 
         let dependencies = ImageSearchAssembly.Dependencies(navigationController: navigationController,
                                                             networkService: networkService,

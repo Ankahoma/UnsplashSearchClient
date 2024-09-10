@@ -13,11 +13,16 @@ struct APIResponse: Codable {
 
 struct ResposeResult: Codable {
     let id: String
-    let urls: URLS
+    let created_at: Date
+    let width: Int
+    let height: Int
+    let description: String
+    let user: User
+    let urls: Urls
     let links: Links
 }
 
-struct URLS: Codable {
+struct Urls: Codable {
     let small: String
 }
 
@@ -25,5 +30,7 @@ struct Links: Codable {
     let download: String
 }
 
-
-
+struct User: Codable {
+    let first_name: String
+    let last_name: String
+}
