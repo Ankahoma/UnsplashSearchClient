@@ -38,6 +38,7 @@ class ImageDetailsViewController: UIViewController {
     }
 
     override func loadView() {
+        contentView.buttonEventDelegate = self
         view = contentView
     }
 }

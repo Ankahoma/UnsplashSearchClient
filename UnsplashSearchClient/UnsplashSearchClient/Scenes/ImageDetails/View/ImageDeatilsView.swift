@@ -74,15 +74,15 @@ private extension ImageDetailsView {
     }
     
     @objc func dismissButtonTapped() {
-        buttonEventDelegate.dismissButtonTapped()
+        buttonEventDelegate?.dismissButtonTapped()
     }
     
     @objc func downloadButtonTapped() {
-        buttonEventDelegate.downloadButtonTapped()
+        buttonEventDelegate?.downloadButtonTapped()
     }
     
     @objc func shareButtonTapped() {
-        buttonEventDelegate.shareButtonTapped()
+        buttonEventDelegate?.shareButtonTapped()
     }
     
     @objc func deleteButtonTapped() {
