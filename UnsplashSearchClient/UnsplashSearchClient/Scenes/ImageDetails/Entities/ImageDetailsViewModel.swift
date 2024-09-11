@@ -9,28 +9,30 @@ import UIKit
 
 struct ImageDetailsViewModel {
     let image: UIImage
-    let author: String
+    let author: String?
     let width: String
     let height: String
     let createdAt: Date
+    let imageDescription: String?
     let isPreview: Bool
-    
+
     init(with galleryModel: GalleryImageViewModel) {
-        self.image = galleryModel.image
-        self.author = galleryModel.author
-        self.width = galleryModel.width
-        self.height = galleryModel.height
-        self.createdAt = galleryModel.createdAt
-        self.isPreview = false
-        
+        image = galleryModel.image
+        author = galleryModel.author
+        width = galleryModel.width
+        height = galleryModel.height
+        createdAt = galleryModel.createdAt
+        imageDescription = galleryModel.imageDescription
+        isPreview = false
     }
-    
-    init(with searchResultModel: SearchResultImage) {
-        self.image = searchResultModel.image
-        self.author = searchResultModel.author
-        self.width = searchResultModel.width
-        self.height = searchResultModel.height
-        self.createdAt = searchResultModel.createdAt
-        self.isPreview = true
+
+    init(with searchResultModel: SearchResultImageDTO) {
+        image = searchResultModel.image
+        author = searchResultModel.author
+        width = searchResultModel.width
+        height = searchResultModel.height
+        createdAt = searchResultModel.createdAt
+        imageDescription = searchResultModel.imageDescription
+        isPreview = true
     }
 }

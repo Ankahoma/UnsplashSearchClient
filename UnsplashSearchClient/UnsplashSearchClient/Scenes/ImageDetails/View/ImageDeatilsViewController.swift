@@ -13,7 +13,6 @@ protocol IImageDetailsDelegate: AnyObject {
 
 protocol IImageDetailsButtonHandler: AnyObject {
     func dismissButtonTapped()
-    func downloadButtonTapped()
     func shareButtonTapped()
 }
 
@@ -44,19 +43,14 @@ class ImageDetailsViewController: UIViewController {
 }
 
 extension ImageDetailsViewController: IImageDetailsButtonHandler {
+
     func dismissButtonTapped() {
-        
+        dismiss(animated: true)
     }
-    
-    func downloadButtonTapped() {
-        
-    }
-    
+
     func shareButtonTapped() {
-        
+        shareImage()
     }
-    
-    
 }
 
 extension ImageDetailsViewController: IImageDetailsDelegate {
@@ -69,9 +63,40 @@ private extension ImageDetailsViewController {
     func setupAppearance() {
         view.backgroundColor = .systemBackground
         setupNavigationBar()
+        setupDescription()
     }
 
     func setupNavigationBar() {
-        navigationItem.rightBarButtonItem = contentView.dismissButton
+        if viewModel.isPreview {
+            navigationItem.rightBarButtonItem = contentView.dismissButton
+        } else {
+            navigationItem.rightBarButtonItem = contentView.dismissButton
+            navigationItem.leftBarButtonItem =  contentView.shareButton
+        }
+    }
+
+    func setupDescription() {
+        if let description = viewModel.imageDescription {
+            contentView.descriptionLabel.text = description
+        } else {
+            contentView.descriptionLabel.isHidden = true
+        }
+
+        if let authorName = viewModel.author {
+            contentView.authorLabel.text = "by " + authorName
+        } else {
+            contentView.authorLabel.isHidden = true
+        }
+
+        contentView.dateLabel.text = "created at " + viewModel.createdAt.convert()
+    }
+}
+
+private extension ImageDetailsViewController {
+    func shareImage() {
+        let itemsToShare: [Any] = [viewModel.image]
+        let activityViewController = UIActivityViewController(activityItems: itemsToShare, applicationActivities: nil)
+
+        present(activityViewController, animated: true, completion: nil)
     }
 }
