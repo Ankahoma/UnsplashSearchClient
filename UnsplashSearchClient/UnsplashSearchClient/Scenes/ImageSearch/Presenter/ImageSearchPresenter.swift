@@ -8,7 +8,6 @@
 import Foundation
 
 protocol IImageSearchPresenter {
-    func viewWillAppear()
     func didLoad(ui: IImageSearchView)
     func performNewSearch(with searchQuery: String, at pageNumber: Int)
     func updateSearchResult(at pageNumber: Int)
@@ -58,10 +57,6 @@ final class ImageSearchPresenter: NSObject {
 }
 
 extension ImageSearchPresenter: IImageSearchPresenter {
-    func viewWillAppear() {
-        searchResult = []
-    }
-
     func didLoad(ui: IImageSearchView) {
         interactor.uiUpdater = self
         self.ui = ui

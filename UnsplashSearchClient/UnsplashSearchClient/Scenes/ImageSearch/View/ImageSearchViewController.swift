@@ -70,7 +70,6 @@ class ImageSearchViewController: UIViewController {
 
     override func viewWillAppear(_: Bool) {
         searchBar.text = ""
-        presenter.viewWillAppear()
         loadRecentSearches()
     }
 
