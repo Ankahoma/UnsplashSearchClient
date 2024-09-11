@@ -8,14 +8,13 @@
 import Foundation
 
 final class DownloadItem {
-    
     var isDownloading = false
     var progress: Float = 0
     var resumeData: Data?
     var task: URLSessionDownloadTask?
-    var imageDTO: SearchResultImage
-    
-    init(image: SearchResultImage) {
-        self.imageDTO = image
+    var imageDTO: SearchResultImageDTO
+
+    init(image: SearchResultImageDTO) {
+        imageDTO = image
     }
 }

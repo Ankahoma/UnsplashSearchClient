@@ -46,9 +46,13 @@ class ImagesGalleryCell: UICollectionViewCell {
     }
 
     func setSelected() {
-        selectionModeCheck.image = isSelected ?
-            UIImage(systemName: "checkmark.circle.fill") :
-            UIImage(systemName: "circle")
+        if isSelected {
+            var config = UIImage.SymbolConfiguration(paletteColors: [.white, .systemGreen])
+            selectionModeCheck.preferredSymbolConfiguration = config
+            selectionModeCheck.image = UIImage(systemName: "checkmark.circle.fill")
+        } else {
+            selectionModeCheck.image = UIImage(systemName: "circle")
+        }
     }
 }
 

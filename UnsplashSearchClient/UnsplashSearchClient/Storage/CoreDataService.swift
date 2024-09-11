@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 protocol IImageSearchDataService {
-    func save(image: SearchResultImage)
+    func save(image: SearchResultImageDTO)
 }
 
 protocol IImagesGalleryDataService {
@@ -24,7 +24,7 @@ final class CoreDataService {
     private let entityName = "ImageEntity"
 
     lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "ImageSearchApp")
+        let container = NSPersistentContainer(name: "UnsplashSearchClient")
         container.loadPersistentStores { _, error in
             if let error = error as NSError? {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
@@ -35,16 +35,17 @@ final class CoreDataService {
 }
 
 extension CoreDataService: IImageSearchDataService {
-    func save(image: SearchResultImage) {
+    func save(image: SearchResultImageDTO) {
         persistentContainer.performBackgroundTask { context in
-            if !self.imageExists(with: image.id) {
+            if self.imageExists(with: image.id) == false {
                 let entity = ImageEntity(context: context)
                 entity.id = image.id
                 entity.createdAt = image.createdAt
                 entity.width = image.width
                 entity.height = image.height
                 entity.author = image.author
-                entity.title = image.description
+                entity.imageDescription = image.imageDescription
+                entity.cathegory = image.cathegory
 
                 if let imageData = image.image.pngData() {
                     entity.imageData = imageData
@@ -63,13 +64,17 @@ extension CoreDataService: IImagesGalleryDataService {
 
         do {
             let fetchResult = try context.fetch(fetchRequest)
-            let images = fetchResult.map { GalleryImageViewModel(id: $0.id,
-                                                                 image: UIImage(data: $0.imageData) ?? UIImage(),
-                                                                 author: $0.author,
-                                                                 createdAt: $0.createdAt,
-                                                                 width: $0.width,
-                                                                 height: $0.height,
-                                                                 title: $0.title, cathegory: $0.cathegory) }
+            let images = fetchResult.map { image in
+
+                GalleryImageViewModel(id: image.id,
+                                      image: UIImage(data: image.imageData) ?? UIImage(),
+                                      author: image.author,
+                                      createdAt: image.createdAt,
+                                      width: image.width,
+                                      height: image.height,
+                                      imageDescription: image.imageDescription,
+                                      cathegory: image.cathegory)
+            }
 
             completion(sortImagesByCathegory(images), nil)
         } catch {
@@ -109,14 +114,21 @@ extension CoreDataService: IImagesGalleryDataService {
     }
 
     func saveAll(_ images: [GalleryImageViewModel]) {
-        for item in images {
+        for image in images {
             let context = persistentContainer.viewContext
             let entity = ImageEntity(context: context)
-            entity.id = item.id
-            entity.cathegory = item.cathegory
-            if let imageData = item.image.pngData() {
+            entity.id = image.id
+            entity.createdAt = image.createdAt
+            entity.width = image.width
+            entity.height = image.height
+            entity.author = image.author
+            entity.imageDescription = image.imageDescription
+            entity.cathegory = image.cathegory
+
+            if let imageData = image.image.pngData() {
                 entity.imageData = imageData
             }
+
             saveContext(context: context)
         }
     }

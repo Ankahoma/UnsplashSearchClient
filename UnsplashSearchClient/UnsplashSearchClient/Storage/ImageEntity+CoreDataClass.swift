@@ -6,10 +6,8 @@
 //
 //
 
-import Foundation
 import CoreData
+import Foundation
 
 @objc(ImageEntity)
-public class ImageEntity: NSManagedObject {
-
-}
+public class ImageEntity: NSManagedObject {}

@@ -6,28 +6,22 @@
 //
 //
 
-import Foundation
 import CoreData
+import Foundation
 
-
-extension ImageEntity {
-
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<ImageEntity> {
+public extension ImageEntity {
+    @nonobjc class func fetchRequest() -> NSFetchRequest<ImageEntity> {
         return NSFetchRequest<ImageEntity>(entityName: "ImageEntity")
     }
 
-    @NSManaged public var id: String
-    @NSManaged public var imageData: Data
-    @NSManaged public var author: String
-    @NSManaged public var createdAt: Date
-    @NSManaged public var width: String
-    @NSManaged public var height: String
-    @NSManaged public var title: String
-    @NSManaged public var cathegory: String
-    
-
+    @NSManaged var id: String
+    @NSManaged var imageData: Data
+    @NSManaged var author: String?
+    @NSManaged var createdAt: Date
+    @NSManaged var width: String
+    @NSManaged var height: String
+    @NSManaged var imageDescription: String?
+    @NSManaged var cathegory: String
 }
 
-extension ImageEntity : Identifiable {
-
-}
+extension ImageEntity: Identifiable {}

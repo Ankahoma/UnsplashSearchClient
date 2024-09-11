@@ -10,11 +10,10 @@ import UIKit
 struct GalleryImageViewModel: Equatable {
     let id: String
     let image: UIImage
-    let author: String
+    let author: String?
     let createdAt: Date
     let width: String
     let height: String
-    let title: String
+    let imageDescription: String?
     let cathegory: String
 }
-

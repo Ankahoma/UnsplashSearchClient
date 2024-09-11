@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct SearchResultImage: Equatable, Hashable {
+struct SearchResultImageDTO: Equatable, Hashable {
     let id: String
     let createdAt: Date
     let width: String
@@ -19,5 +19,4 @@ struct SearchResultImage: Equatable, Hashable {
     let image: UIImage
     let cathegory: String
     var downloaded = false
-    
 }
