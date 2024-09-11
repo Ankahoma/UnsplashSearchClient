@@ -8,8 +8,11 @@
 import UIKit
 
 final class ImageSearchView: UIView {
-    var tableViewHeightConstraint: NSLayoutConstraint!
     var buttonEventDelegate: IImageSearchButtonHandler?
+    private var tableViewHeightConstraint: NSLayoutConstraint!
+    private var twoColumnsLayout: UICollectionViewLayout!
+    private var oneColumnLayout: UICollectionViewLayout!
+    private var isCurrentLayoutTwoColumned = true
 
     var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
@@ -22,13 +25,14 @@ final class ImageSearchView: UIView {
     }()
 
     lazy var collectionView: UICollectionView = {
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCompositionalLayout())
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createTwoColumnsLayout())
         collectionView.register(SearchResultCell.self, forCellWithReuseIdentifier: SearchResultCell.identifier)
         collectionView.backgroundColor = .systemBackground
         collectionView.isUserInteractionEnabled = true
         collectionView.allowsMultipleSelection = true
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         collectionView.translatesAutoresizingMaskIntoConstraints = false
+
         return collectionView
     }()
 
@@ -38,6 +42,7 @@ final class ImageSearchView: UIView {
         tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "SuggestionCell")
+
         return tableView
     }()
 
@@ -48,12 +53,20 @@ final class ImageSearchView: UIView {
         return button
     }()
 
+    lazy var changeItemsAlignmentButton: UIBarButtonItem = {
+        let button = UIBarButtonItem(image: UIImage(systemName: "rectangle.grid.1x2"),
+                                     style: .plain, target: self, action: #selector(changeItemsAlignmentButtonTapped))
+
+        return button
+    }()
 
     lazy var activityIndicator: UIActivityIndicatorView = .init(style: .large)
 
     init() {
         super.init(frame: .zero)
         setConstraints()
+        twoColumnsLayout = createTwoColumnsLayout()
+        oneColumnLayout = createOneColumnLayout()
     }
 
     @available(*, unavailable)
@@ -150,7 +163,7 @@ final class ImageSearchView: UIView {
         activityIndicator.stopAnimating()
     }
 
-    func createCompositionalLayout() -> UICollectionViewLayout {
+    func createTwoColumnsLayout() -> UICollectionViewLayout {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.5), heightDimension: .fractionalHeight(1))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         item.contentInsets = NSDirectionalEdgeInsets(top: 2, leading: 2, bottom: 2, trailing: 2)
@@ -165,7 +178,36 @@ final class ImageSearchView: UIView {
         return layout
     }
 
+    func createOneColumnLayout() -> UICollectionViewLayout {
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        item.contentInsets = NSDirectionalEdgeInsets(top: 2, leading: 2, bottom: 2, trailing: 2)
+
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(1))
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+
+        let section = NSCollectionLayoutSection(group: group)
+
+        let layout = UICollectionViewCompositionalLayout(section: section)
+
+        return layout
+    }
+
     @objc func galleryButtonTapped() {
         buttonEventDelegate?.showGallery()
+    }
+
+    @objc func changeItemsAlignmentButtonTapped() {
+        if isCurrentLayoutTwoColumned {
+            collectionView.collectionViewLayout = oneColumnLayout
+            layoutIfNeeded()
+            changeItemsAlignmentButton.image = UIImage(systemName: "square.grid.2x2")
+            isCurrentLayoutTwoColumned = false
+        } else {
+            collectionView.collectionViewLayout = twoColumnsLayout
+            layoutIfNeeded()
+            changeItemsAlignmentButton.image = UIImage(systemName: "rectangle.grid.1x2")
+            isCurrentLayoutTwoColumned = true
+        }
     }
 }

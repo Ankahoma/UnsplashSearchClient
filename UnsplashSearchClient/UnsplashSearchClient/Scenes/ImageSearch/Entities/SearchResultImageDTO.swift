@@ -12,10 +12,10 @@ struct SearchResultImageDTO: Equatable, Hashable {
     let createdAt: Date
     let width: String
     let height: String
-    let description: String
+    let imageDescription: String?
     let previewUrl: URL
     let downloadUrl: URL
-    let author: String
+    let author: String?
     let image: UIImage
     let cathegory: String
     var downloaded = false

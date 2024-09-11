@@ -81,6 +81,7 @@ class ImageSearchViewController: UIViewController {
     }
 
     override func loadView() {
+        contentView.buttonEventDelegate = self
         view = contentView
     }
 }
@@ -261,6 +262,7 @@ private extension ImageSearchViewController {
     func setupNavigationBar() {
         navigationItem.title = "ImageSearch"
         navigationItem.rightBarButtonItem = contentView.showGalleryButton
+        navigationItem.leftBarButtonItem = contentView.changeItemsAlignmentButton
     }
 
     func setupNotifications() {
