@@ -12,7 +12,7 @@ class ImagesGalleryCell: UICollectionViewCell {
 
     var selectionModeCheck: UIImageView = {
         let imageView = UIImageView()
-        imageView.tintColor = .systemGreen
+        imageView.tintColor = .systemBlue
         imageView.isHidden = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
@@ -47,10 +47,11 @@ class ImagesGalleryCell: UICollectionViewCell {
 
     func setSelected() {
         if isSelected {
-            var config = UIImage.SymbolConfiguration(paletteColors: [.white, .systemGreen])
+            let config = UIImage.SymbolConfiguration(paletteColors: [.white, .systemBlue])
             selectionModeCheck.preferredSymbolConfiguration = config
             selectionModeCheck.image = UIImage(systemName: "checkmark.circle.fill")
         } else {
+            selectionModeCheck.preferredSymbolConfiguration = nil
             selectionModeCheck.image = UIImage(systemName: "circle")
         }
     }

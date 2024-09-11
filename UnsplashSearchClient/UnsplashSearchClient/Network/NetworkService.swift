@@ -28,7 +28,7 @@ extension NetworkService: INetworkService {
             switch response.statusCode {
             case 200...299:
                 if self.searchResultDataIsEmpty(data) {
-                    completion(.failure(NetworkError(code: -1000, description: "Images not found")))
+                    completion(.failure(NetworkError(code: -1000, description: "Such images not found")))
                 }
                 completion(.success(data))
             case 300...399: completion(.success(data))
