@@ -16,7 +16,7 @@ struct ResposeResult: Codable {
     let created_at: Date
     let width: Int
     let height: Int
-    let description: String
+    let description: String?
     let user: User
     let urls: Urls
     let links: Links
@@ -31,6 +31,5 @@ struct Links: Codable {
 }
 
 struct User: Codable {
-    let first_name: String
-    let last_name: String
+    let name: String?
 }
