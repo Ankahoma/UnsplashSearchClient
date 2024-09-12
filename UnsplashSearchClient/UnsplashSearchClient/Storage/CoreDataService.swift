@@ -16,8 +16,6 @@ protocol IImageSearchDataService {
 protocol IImagesGalleryDataService {
     func fetchImages(completion: ([[GalleryImageViewModel]]?, Error?) -> Void)
     func removeImage(_ image: GalleryImageViewModel)
-    func removeAll()
-    func saveAll(_ images: [GalleryImageViewModel])
 }
 
 final class CoreDataService {
@@ -95,41 +93,6 @@ extension CoreDataService: IImagesGalleryDataService {
             saveContext(context: context)
         } catch let error as NSError {
             fatalError("Could not delete item. \(error), \(error.userInfo)")
-        }
-    }
-
-    func removeAll() {
-        let context = persistentContainer.viewContext
-        let fetchRequest = ImageEntity.fetchRequest()
-
-        do {
-            let items = try context.fetch(fetchRequest)
-            for item in items {
-                context.delete(item)
-            }
-            saveContext(context: context)
-        } catch let error as NSError {
-            fatalError("Could not delete item. \(error), \(error.userInfo)")
-        }
-    }
-
-    func saveAll(_ images: [GalleryImageViewModel]) {
-        for image in images {
-            let context = persistentContainer.viewContext
-            let entity = ImageEntity(context: context)
-            entity.id = image.id
-            entity.createdAt = image.createdAt
-            entity.width = image.width
-            entity.height = image.height
-            entity.author = image.author
-            entity.imageDescription = image.imageDescription
-            entity.cathegory = image.cathegory
-
-            if let imageData = image.image.pngData() {
-                entity.imageData = imageData
-            }
-
-            saveContext(context: context)
         }
     }
 }
